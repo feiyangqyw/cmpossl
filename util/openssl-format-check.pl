@@ -19,6 +19,9 @@ while(<>) {
         print "$ARGV:$line:non-ascii: $_";
     }
 
+    if(length($_) - 1 > 80) {
+        print "$ARGV:$line:len>80: $_";
+    }
     if(m/\s\n$/) {
         print "$ARGV:$line:space\@EOL: $_";
     }
@@ -30,7 +33,7 @@ while(<>) {
     $count = 0 if ($2 eq "/" && $3 eq "*"); # ignore indent on line starting '/*'
     $indent = $count;
     if ($hanging_col == -1) {
-        $count-- if (m/^(\s*)([a-z]+):/ && $2 ne "default"); # label
+        $count-- if (m/^(\s*)([a-z_0-9]+):/ && $2 ne "default"); # label
     }
     if($count %4 != 0 && $indent != $hanging_col) { # well, does not indentation that is off by multiples of 4
         print "$ARGV:$line:indent: $_";
@@ -48,7 +51,7 @@ while(<>) {
         if ($tail =~ m/\*\/(.*)$/) { # ending */
             $offset = length($head) + 2 + length($tail) - length($1);
             $_ = $1;
-            goto NEXT_PAREN; 
+            goto NEXT_PAREN;
         } else {
             $hanging_col = length($head) + 1;
         }
@@ -62,9 +65,9 @@ while(<>) {
                 goto NEXT_PAREN;
             }
             $hanging_col = $offset + length($head) + 1;
-      } elsif ($indent != $hanging_col) {
-          $hanging_col = -1;
-      }
+        } elsif ($indent != $hanging_col) {
+            $hanging_col = -1;
+        }
     }
     $line = 0 if eof;
 }
