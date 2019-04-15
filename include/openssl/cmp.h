@@ -299,11 +299,17 @@ void OSSL_CMP_PKISI_free(OSSL_CMP_PKISI *si);
 DECLARE_ASN1_DUP_FUNCTION(OSSL_CMP_MSG)
 
 /* from cmp_ctx.c */
+int OSSL_CMP_sk_X509_add1_cert (STACK_OF(X509) *sk, X509 *cert,
+                                int not_duplicate, int prepend);
+int OSSL_CMP_sk_X509_add1_certs(STACK_OF(X509) *sk, const STACK_OF(X509) *certs,
+                                int no_self_signed, int no_duplicates);
+int OSSL_CMP_X509_STORE_add1_certs(X509_STORE *store, STACK_OF(X509) *certs,
+                                   int only_self_signed);
 int OSSL_CMP_ASN1_OCTET_STRING_set1(ASN1_OCTET_STRING **tgt,
                                     const ASN1_OCTET_STRING *src);
 int OSSL_CMP_ASN1_OCTET_STRING_set1_bytes(ASN1_OCTET_STRING **tgt,
                                           const unsigned char *bytes,
-                                          size_t len);
+                                         size_t len);
 
 OSSL_CMP_CTX *OSSL_CMP_CTX_create(void);
 int OSSL_CMP_CTX_init(OSSL_CMP_CTX *ctx);
@@ -383,6 +389,7 @@ OSSL_CMP_PKIFREETEXT *OSSL_CMP_CTX_statusString_get(OSSL_CMP_CTX *ctx);
 ASN1_OCTET_STRING *OSSL_CMP_CTX_get0_transactionID(const OSSL_CMP_CTX *ctx);
 ASN1_OCTET_STRING *OSSL_CMP_CTX_get0_last_senderNonce(const OSSL_CMP_CTX *ctx);
 ASN1_OCTET_STRING *OSSL_CMP_CTX_get0_recipNonce(const OSSL_CMP_CTX *ctx);
+int OSSL_CMP_CTX_set1_expected_sender(OSSL_CMP_CTX *ctx, const X509_NAME *name);
 #  define OSSL_CMP_CTX_OPT_MSGTIMEOUT 0
 #  define OSSL_CMP_CTX_OPT_TOTALTIMEOUT 1
 #  define OSSL_CMP_CTX_OPT_SUBJECTALTNAME_CRITICAL 2

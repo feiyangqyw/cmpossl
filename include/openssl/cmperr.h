@@ -27,6 +27,8 @@ int ERR_load_CMP_strings(void);
 /*
  * CMP function codes.
  */
+#  define CMP_F_OSSL_CMP_ASN1_OCTET_STRING_SET1            134
+#  define CMP_F_OSSL_CMP_ASN1_OCTET_STRING_SET1_BYTES      135
 #  define CMP_F_OSSL_CMP_CTX_CAPUBS_GET1                   100
 #  define CMP_F_OSSL_CMP_CTX_CREATE                        101
 #  define CMP_F_OSSL_CMP_CTX_EXTRACERTSIN_GET1             102
