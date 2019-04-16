@@ -60,10 +60,6 @@ struct OSSL_cmp_ctx_st {
     STACK_OF(X509) *extraCertsOut; /* to be included in PKI messages */
     STACK_OF(X509) *extraCertsIn; /* extraCerts received from server */
     STACK_OF(X509) *caPubs; /* CA certs received from server (in IP message) */
-#if 0
-    OSSL_CMP_PKIFREETEXT *freeText; /* text is intended for human consumption,
-                   this may be used to indicate context-specific instructions */
-#endif
     OSSL_CMP_PKIFREETEXT *lastStatusString;
     X509 *newClCert; /* *new* CLIENT certificate received from the CA
      * TODO: this should be a stack since there could be more than one */
@@ -273,12 +269,6 @@ typedef struct OSSL_cmp_certifiedkeypair_st {
     OSSL_CRMF_PKIPUBLICATIONINFO *publicationInfo;
 } OSSL_CMP_CERTIFIEDKEYPAIR;
 DECLARE_ASN1_FUNCTIONS(OSSL_CMP_CERTIFIEDKEYPAIR)
-
-#define OSSL_CMP_PKIFAILUREINFO_MAX_BIT_PATTERN \
-    ( (1<<(OSSL_CMP_PKIFAILUREINFO_MAX+1)) - 1)
-#if OSSL_CMP_PKIFAILUREINFO_MAX_BIT_PATTERN > INT_MAX
-# error  CMP_PKIFAILUREINFO_MAX bit pattern does not fit in type int
-#endif
 
 /*-
  *   PKIStatusInfo ::= SEQUENCE {
