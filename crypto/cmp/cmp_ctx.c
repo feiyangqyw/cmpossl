@@ -76,31 +76,6 @@ int OSSL_CMP_sk_X509_add1_certs(STACK_OF(X509) *sk, const STACK_OF(X509) *certs,
     return 1;
 }
 
-
-/*
- * Add all or self-signed certificates from the given stack to given store.
- * certs parameter may be NULL.
- * returns 1 on success, 0 on error
- */
-int OSSL_CMP_X509_STORE_add1_certs(X509_STORE *store, STACK_OF(X509) *certs,
-                                   int only_self_signed)
-{
-    int i;
-
-    if (store == NULL)
-        return 0;
-
-    if (certs == NULL)
-        return 1;
-    for (i = 0; i < sk_X509_num(certs); i++) {
-        X509 *cert = sk_X509_value(certs, i);
-        if (!only_self_signed || X509_check_issued(cert, cert) == X509_V_OK)
-            if (!X509_STORE_add_cert(store, cert)) /* ups cert ref counter */
-                return 0;
-    }
-    return 1;
-}
-
 X509_EXTENSIONS *CMP_exts_dup(const X509_EXTENSIONS *extin /* may be NULL */)
 {
     X509_EXTENSIONS *exts = sk_X509_EXTENSION_new_null();
@@ -120,7 +95,6 @@ X509_EXTENSIONS *CMP_exts_dup(const X509_EXTENSIONS *extin /* may be NULL */)
     sk_X509_EXTENSION_pop_free(exts, X509_EXTENSION_free);
     return NULL;
 }
-
 
 /*
  * free any previous value of the variable referenced via tgt
