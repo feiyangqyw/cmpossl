@@ -353,12 +353,12 @@ STACK_OF(X509) *OSSL_CMP_CTX_extraCertsIn_get1(const OSSL_CMP_CTX *ctx);
 int OSSL_CMP_CTX_set1_extraCertsIn(OSSL_CMP_CTX *ctx,
                                    STACK_OF(X509) *extraCertsIn);
 
-int OSSL_CMP_CTX_set1_newClCert(OSSL_CMP_CTX *ctx, const X509 *cert);
+int OSSL_CMP_CTX_set1_newClCert(OSSL_CMP_CTX *ctx, X509 *cert);
 X509 *OSSL_CMP_CTX_get0_newClCert(const OSSL_CMP_CTX *ctx);
-int OSSL_CMP_CTX_set0_pkey(OSSL_CMP_CTX *ctx, const EVP_PKEY *pkey);
-int OSSL_CMP_CTX_set1_pkey(OSSL_CMP_CTX *ctx, const EVP_PKEY *pkey);
-int OSSL_CMP_CTX_set0_newPkey(OSSL_CMP_CTX *ctx, const EVP_PKEY *pkey);
-int OSSL_CMP_CTX_set1_newPkey(OSSL_CMP_CTX *ctx, const EVP_PKEY *pkey);
+int OSSL_CMP_CTX_set0_pkey(OSSL_CMP_CTX *ctx, EVP_PKEY *pkey);
+int OSSL_CMP_CTX_set1_pkey(OSSL_CMP_CTX *ctx, EVP_PKEY *pkey);
+int OSSL_CMP_CTX_set0_newPkey(OSSL_CMP_CTX *ctx, EVP_PKEY *pkey);
+int OSSL_CMP_CTX_set1_newPkey(OSSL_CMP_CTX *ctx, EVP_PKEY *pkey);
 EVP_PKEY *OSSL_CMP_CTX_get0_newPkey(const OSSL_CMP_CTX *ctx);
 int OSSL_CMP_CTX_set1_transactionID(OSSL_CMP_CTX *ctx,
                                     const ASN1_OCTET_STRING *id);
