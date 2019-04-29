@@ -4833,9 +4833,9 @@ OSSL_CMP_printf                         4777	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_log_init                       4778	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_log_close                      4779	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_print_errors                   4780	3_0_0	EXIST::FUNCTION:CMP
-OSSL_CMP_ASN1_OCTET_STRING_set1         4781	3_0_0	EXIST::FUNCTION:CMP
-OSSL_CMP_ASN1_OCTET_STRING_set1_bytes   4782	3_0_0	EXIST::FUNCTION:CMP
-OSSL_CMP_CTX_create                     4783	3_0_0	EXIST::FUNCTION:CMP
+OSSL_CMP_ASN1_OCTET_STRING_set1         4781	3_0_0	EXIST::FUNCTION:
+OSSL_CMP_ASN1_OCTET_STRING_set1_bytes   4782	3_0_0	EXIST::FUNCTION:
+OSSL_CMP_CTX_create                     4783	3_0_0	NOEXIST::FUNCTION:CMP
 OSSL_CMP_CTX_init                       4784	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_CTX_get0_trustedStore          4785	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_CTX_set0_trustedStore          4786	3_0_0	EXIST::FUNCTION:CMP
@@ -4897,3 +4897,9 @@ OSSL_CMP_CTX_get0_transactionID         4841	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_CTX_get0_last_senderNonce      4842	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_CTX_get0_recipNonce            4843	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_CTX_set_option                 4844	3_0_0	EXIST::FUNCTION:CMP
+OSSL_CMP_CTX_set1_expected_sender       4845	3_0_0	EXIST::FUNCTION:CMP
+OSSL_CMP_sk_X509_add1_cert              4846	3_0_0	EXIST::FUNCTION:
+OSSL_CMP_sk_X509_add1_certs             4847	3_0_0	EXIST::FUNCTION:
+CMP_exts_dup                            4848	3_0_0	EXIST::FUNCTION:
+OSSL_CRMF_CERTID_get0_issuer            4849	3_0_0	EXIST::FUNCTION:CMP
+OSSL_CRMF_CERTID_get0_serialNumber      4850	3_0_0	EXIST::FUNCTION:CMP
