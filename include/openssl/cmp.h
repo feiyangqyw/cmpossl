@@ -284,8 +284,8 @@ void OSSL_CMP_PKISI_free(OSSL_CMP_PKISI *si);
 DECLARE_ASN1_DUP_FUNCTION(OSSL_CMP_MSG)
 
 /* from cmp_ctx.c */
-OSSL_CMP_CTX *OSSL_CMP_CTX_create(void);
-void OSSL_CMP_CTX_delete(OSSL_CMP_CTX *ctx);
+OSSL_CMP_CTX *OSSL_CMP_CTX_new(void);
+void OSSL_CMP_CTX_free(OSSL_CMP_CTX *ctx);
 /* various CMP options: */
 typedef enum {
   OSSL_CMP_CTX_OPT_MSGTIMEOUT,
