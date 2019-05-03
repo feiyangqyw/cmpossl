@@ -4912,3 +4912,4 @@ OSSL_CMP_add_error_txt                  4856	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_print_errors_cb                4857	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_X509_STORE_add1_certs          4858	3_0_0	EXIST::FUNCTION:CMP
 OSSL_CMP_X509_STORE_get1_certs          4859	3_0_0	EXIST::FUNCTION:CMP
+OSSL_CMP_ITAV_create                    4860	3_0_0	EXIST::FUNCTION:CMP
