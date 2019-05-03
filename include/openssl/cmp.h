@@ -15,10 +15,11 @@
 # define OSSL_HEADER_CMP_H
 
 # include <openssl/opensslconf.h>
-
 # ifndef OPENSSL_NO_CMP
+
 #  include <openssl/crmf.h>
 #  include <openssl/cmperr.h>
+#  include <openssl/cmp_util.h>
 
 /* explicit #includes not strictly needed since implied by the above: */
 #  include <openssl/ossl_typ.h>
@@ -26,11 +27,11 @@
 #  include <openssl/x509.h>
 #  include <openssl/x509v3.h>
 
-#  define OSSL_CMP_PVNO 2
-
 #  ifdef  __cplusplus
 extern "C" {
 #  endif
+
+#  define OSSL_CMP_PVNO 2
 
 /*-
  *   PKIFailureInfo ::= BIT STRING {
@@ -223,50 +224,6 @@ typedef struct OSSL_cmp_certresponse_st OSSL_CMP_CERTRESPONSE;
 DEFINE_STACK_OF(OSSL_CMP_CERTRESPONSE)
 typedef STACK_OF(ASN1_UTF8STRING) OSSL_CMP_PKIFREETEXT;
 
-/*
- * logging
- */
-
-/* declarations resemble those from bio/bss_log.c and syslog.h */
-typedef enum {OSSL_LOG_EMERG, OSSL_LOG_ALERT, OSSL_LOG_CRIT, OSSL_LOG_ERR,
-              OSSL_LOG_WARNING, OSSL_LOG_NOTICE, OSSL_LOG_INFO, OSSL_LOG_DEBUG}
-    OSSL_CMP_severity;
-
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901)
-# define OSSL_CMP_FUNC __func__
-#elif defined(__STDC__) && defined(PEDANTIC)
-# define OSSL_CMP_FUNC "(PEDANTIC disallows function name)"
-#elif defined(WIN32) || defined(__GNUC__) || defined(__GNUG__)
-# define OSSL_CMP_FUNC __FUNCTION__
-#elif defined(__FUNCSIG__)
-# define OSSL_CMP_FUNC __FUNCSIG__
-#else
-# define OSSL_CMP_FUNC "(unknown function)"
-#endif
-#define OSSL_CMP_FUNC_FILE_LINE OSSL_CMP_FUNC, OPENSSL_FILE, OPENSSL_LINE
-#define OSSL_CMP_FL_EMERG OSSL_CMP_FUNC_FILE_LINE, OSSL_LOG_EMERG
-#define OSSL_CMP_FL_ALERT OSSL_CMP_FUNC_FILE_LINE, OSSL_LOG_ALERT
-#define OSSL_CMP_FL_CRIT  OSSL_CMP_FUNC_FILE_LINE, OSSL_LOG_CRIT
-#define OSSL_CMP_FL_ERR   OSSL_CMP_FUNC_FILE_LINE, OSSL_LOG_ERR
-#define OSSL_CMP_FL_WARN  OSSL_CMP_FUNC_FILE_LINE, OSSL_LOG_WARNING
-#define OSSL_CMP_FL_NOTE  OSSL_CMP_FUNC_FILE_LINE, OSSL_LOG_NOTICE
-#define OSSL_CMP_FL_INFO  OSSL_CMP_FUNC_FILE_LINE, OSSL_LOG_INFO
-#define OSSL_CMP_FL_DEBUG OSSL_CMP_FUNC_FILE_LINE, OSSL_LOG_DEBUG
-
-int OSSL_CMP_puts(const char *component, const char *file, int lineno,
-                  OSSL_CMP_severity level, const char *msg);
-int OSSL_CMP_printf(const OSSL_CMP_CTX *ctx,
-                    const char *func, const char *file, int lineno,
-                    OSSL_CMP_severity level, const char *fmt, ...);
-#define OSSL_CMP_alert(ctx, msg) OSSL_CMP_printf(ctx, OSSL_CMP_FL_ALERT, msg)
-#define OSSL_CMP_err(ctx, msg)   OSSL_CMP_printf(ctx, OSSL_CMP_FL_ERR  , msg)
-#define OSSL_CMP_warn(ctx, msg)  OSSL_CMP_printf(ctx, OSSL_CMP_FL_WARN , msg)
-#define OSSL_CMP_info(ctx, msg)  OSSL_CMP_printf(ctx, OSSL_CMP_FL_INFO , msg)
-#define OSSL_CMP_debug(ctx, msg) OSSL_CMP_printf(ctx, OSSL_CMP_FL_DEBUG, msg)
-int  OSSL_CMP_log_init(void);
-void OSSL_CMP_log_close(void);
-void OSSL_CMP_print_errors(OSSL_CMP_CTX *ctx);
-
 #  define OPENSSL_NO_OCSP /* TODO remove when chunk 8 is contributed */
 /*
  * function DECLARATIONS
@@ -288,27 +245,33 @@ OSSL_CMP_CTX *OSSL_CMP_CTX_new(void);
 void OSSL_CMP_CTX_free(OSSL_CMP_CTX *ctx);
 /* various CMP options: */
 typedef enum {
-  OSSL_CMP_CTX_OPT_MSGTIMEOUT,
-  OSSL_CMP_CTX_OPT_TOTALTIMEOUT,
-  OSSL_CMP_CTX_OPT_VALIDITYDAYS,
-  OSSL_CMP_CTX_OPT_SUBJECTALTNAME_NODEFAULT,
-  OSSL_CMP_CTX_OPT_SUBJECTALTNAME_CRITICAL,
-  OSSL_CMP_CTX_OPT_POLICIES_CRITICAL,
-  OSSL_CMP_CTX_OPT_POPOMETHOD,
-  OSSL_CMP_CTX_OPT_DIGEST_ALGNID,
-  OSSL_CMP_CTX_OPT_REVOCATION_REASON,
-  OSSL_CMP_CTX_OPT_IMPLICITCONFIRM,
-  OSSL_CMP_CTX_OPT_DISABLECONFIRM,
-  OSSL_CMP_CTX_OPT_UNPROTECTED_SEND,
-  OSSL_CMP_CTX_OPT_UNPROTECTED_ERRORS,
-  OSSL_CMP_CTX_OPT_IGNORE_KEYUSAGE,
-  OSSL_CMP_CTX_PERMIT_TA_IN_EXTRACERTS_FOR_IR
-} OSSL_ctx_option;
-int OSSL_CMP_CTX_set_option(OSSL_CMP_CTX *ctx, OSSL_ctx_option opt, int val);
-typedef int (*OSSL_cmp_log_cb_t) (const char *component,
-                                  const char *file, int lineno,
-                                  OSSL_CMP_severity level, const char *msg);
+  OSSL_CMP_OPT_MSGTIMEOUT,
+  OSSL_CMP_OPT_TOTALTIMEOUT,
+  OSSL_CMP_OPT_VALIDITYDAYS,
+  OSSL_CMP_OPT_SUBJECTALTNAME_NODEFAULT,
+  OSSL_CMP_OPT_SUBJECTALTNAME_CRITICAL,
+  OSSL_CMP_OPT_POLICIES_CRITICAL,
+  OSSL_CMP_OPT_POPOMETHOD,
+  OSSL_CMP_OPT_DIGEST_ALGNID,
+  OSSL_CMP_OPT_REVOCATION_REASON,
+  OSSL_CMP_OPT_IMPLICITCONFIRM,
+  OSSL_CMP_OPT_DISABLECONFIRM,
+  OSSL_CMP_OPT_UNPROTECTED_SEND,
+  OSSL_CMP_OPT_UNPROTECTED_ERRORS,
+  OSSL_CMP_OPT_IGNORE_KEYUSAGE,
+  OSSL_CMP_OPT_PERMIT_TA_IN_EXTRACERTS_FOR_IR
+} OSSL_CMP_option;
+int OSSL_CMP_CTX_set_option(OSSL_CMP_CTX *ctx, OSSL_CMP_option opt, int val);
+/* logging: */
 int OSSL_CMP_CTX_set_log_cb(OSSL_CMP_CTX *ctx, OSSL_cmp_log_cb_t cb);
+#  define OSSL_CMP_err(ctx, msg)   OSSL_CMP_printf(ctx, OSSL_CMP_FL_ERR  , msg)
+#  define OSSL_CMP_warn(ctx, msg)  OSSL_CMP_printf(ctx, OSSL_CMP_FL_WARN , msg)
+#  define OSSL_CMP_info(ctx, msg)  OSSL_CMP_printf(ctx, OSSL_CMP_FL_INFO , msg)
+#  define OSSL_CMP_debug(ctx, msg) OSSL_CMP_printf(ctx, OSSL_CMP_FL_DEBUG, msg)
+int OSSL_CMP_printf(const OSSL_CMP_CTX *ctx,
+                    const char *func, const char *file, int lineno,
+                    OSSL_CMP_severity level, const char *fmt, ...);
+void OSSL_CMP_print_errors(OSSL_CMP_CTX *ctx);
 /* message transfer: */
 int OSSL_CMP_CTX_set1_serverPath(OSSL_CMP_CTX *ctx, const char *path);
 int OSSL_CMP_CTX_set1_serverName(OSSL_CMP_CTX *ctx, const char *name);
@@ -371,13 +334,13 @@ typedef int (*OSSL_cmp_certConf_cb_t) (OSSL_CMP_CTX *ctx, X509 *cert,
 int OSSL_CMP_CTX_set_certConf_cb(OSSL_CMP_CTX *ctx, OSSL_cmp_certConf_cb_t cb);
 int OSSL_CMP_CTX_set_certConf_cb_arg(OSSL_CMP_CTX *ctx, void *arg);
 void *OSSL_CMP_CTX_get_certConf_cb_arg(OSSL_CMP_CTX *ctx);
-/* result fetching */
+/* result fetching: */
 int OSSL_CMP_CTX_status_get(OSSL_CMP_CTX *ctx);
 OSSL_CMP_PKIFREETEXT *OSSL_CMP_CTX_statusString_get(OSSL_CMP_CTX *ctx);
 int OSSL_CMP_CTX_failInfoCode_get(OSSL_CMP_CTX *ctx);
 STACK_OF(X509) *OSSL_CMP_CTX_extraCertsIn_get1(const OSSL_CMP_CTX *ctx);
 STACK_OF(X509) *OSSL_CMP_CTX_caPubs_get1(const OSSL_CMP_CTX *ctx);
-/* for test purposes only: */
+/* exported for testing and debugging purposes: */
 int OSSL_CMP_CTX_set1_transactionID(OSSL_CMP_CTX *ctx,
                                     const ASN1_OCTET_STRING *id);
 int OSSL_CMP_CTX_set1_last_senderNonce(OSSL_CMP_CTX *ctx,
