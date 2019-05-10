@@ -13,29 +13,91 @@
 
 #include <string.h>
 #include <openssl/cmp_util.h>
+#include <openssl/trace.h>
 #include <openssl/err.h>
 #include <openssl/cmperr.h>
 #include <openssl/x509v3.h>
 
+/*
+ * functions for logging via the trace API
+ */
+
+static size_t trace_cb(const char *buf, size_t cnt,
+                       int category, int cmd, void *vdata)
+{
+    BIO *bio = vdata;
+    const char *label = NULL;
+    size_t ret;
+
+    switch (cmd) {
+    case OSSL_TRACE_CTRL_BEGIN:
+        label = "BEGIN";
+        break;
+    case OSSL_TRACE_CTRL_END:
+        label = "END";
+        break;
+    }
+
+    if (label != NULL) {
+        union {
+            pthread_t tid;
+            unsigned long ltid;
+        } tid;
+
+        tid.tid = pthread_self();
+        BIO_printf(bio, "%s TRACE[%s]:%lx\n",
+                   label, OSSL_trace_get_category_name(category), tid.ltid);
+    }
+
+    ret = (size_t)BIO_puts(bio, buf);
+    if (cmd == OSSL_TRACE_CTRL_END) { /* OSSL_trace_end() flushes too early */
+        if (BIO_flush(bio) <= 0)
+            ret = 0;
+    }
+    return ret;
+}
+
 int OSSL_CMP_log_open(void)
 {
-    return 1;
+#ifndef OPENSSL_NO_STDIO
+    BIO *bio_out = bio_out = BIO_new_fp(stdout, BIO_NOCLOSE);
+    BIO *bio_err = bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
+
+    if (bio_out== NULL || bio_err == NULL)
+        goto err;
+
+    if (OSSL_trace_set_callback(OSSL_TRACE_CATEGORY_FATAL, trace_cb, bio_err)
+        && OSSL_trace_set_callback(OSSL_TRACE_CATEGORY_ERR, trace_cb, bio_err)
+        && OSSL_trace_set_callback(OSSL_TRACE_CATEGORY_WARN, trace_cb, bio_out)
+        && OSSL_trace_set_callback(OSSL_TRACE_CATEGORY_INFO, trace_cb, bio_out)
+        && OSSL_trace_set_callback(OSSL_TRACE_CATEGORY_DEBUG, trace_cb, bio_out)
+       )
+        return 1;
+
+ err:
+    BIO_free(bio_out);
+    BIO_free(bio_err);
+#endif
+    return 0;
 }
 
 void OSSL_CMP_log_close(void)
 {
-    ;
+    /*
+     * here bio_out and bio_err, as allocated above, should better be freeed,
+     * but this is currently not supported by the trace API.
+     */
 }
 
-/* prints log messages to given stream fd */
-static int CMP_log_fd(const char *component, const char *file, int lineno,
-                      OSSL_CMP_severity level, const char *msg, FILE *fd)
+int OSSL_CMP_puts(const char *component, const char *file, int lineno,
+                  OSSL_CMP_severity level, const char *msg)
 {
     char *lvl = NULL;
-    int msg_len;
+    size_t msg_len;
     int msg_nl;
     char loc[256];
     int len = 0;
+    size_t trc_len = 0; /* default 0 means failure */
 
     if (component == NULL)
         component = "(no component)";
@@ -72,25 +134,26 @@ static int CMP_log_fd(const char *component, const char *file, int lineno,
         (void)snprintf(loc+len , sizeof(loc)-len, " %s", lvl);
     msg_len = strlen(msg);
     msg_nl = msg_len > 0 && msg[msg_len-1] == '\n';
-    len = fprintf(fd, "%s: %s%s", loc, msg, msg_nl != 0 ? "" : "\n");
 
-    return fflush(fd) != EOF && len >= 0;
+    do {
+        int category
+            = level == OSSL_LOG_ERR     ? OSSL_TRACE_CATEGORY_ERR
+            : level == OSSL_LOG_WARNING ? OSSL_TRACE_CATEGORY_WARN
+            : level == OSSL_LOG_INFO    ? OSSL_TRACE_CATEGORY_INFO
+            : level == OSSL_LOG_DEBUG   ? OSSL_TRACE_CATEGORY_DEBUG
+            :                             OSSL_TRACE_CATEGORY_FATAL;
+        BIO *trc_out = OSSL_trace_begin(category);
+
+        if (trc_out != NULL) {
+            trc_len = BIO_printf(trc_out, "%s: %s%s", loc, msg,
+                                 msg_nl != 0 ? "" : "\n");
+            OSSL_trace_end(category, trc_out);
+        }
+    } while (0);
+
+    return trc_len;
 }
 
-/* prints errors and warnings to stderr, info and debug messages to stdout */
-int OSSL_CMP_puts(const char *component, const char *file, int lineno,
-                  OSSL_CMP_severity level, const char *msg)
-{
-#ifndef OPENSSL_NO_STDIO
-    FILE *fd = level <= OSSL_LOG_WARNING ? stderr : stdout;
-    return CMP_log_fd(component, file, lineno, level, msg, fd);
-#endif
-}
-
-/*
- * Function used for outputting error/warn/debug messages depending on
- * log callback function. By default the function OSSL_CMP_puts() is used.
- */
 int OSSL_CMP_log_printf(OSSL_cmp_log_cb_t log_fn,
                         const char *func, const char *file, int lineno,
                         OSSL_CMP_severity level, const char *fmt, va_list argp)
