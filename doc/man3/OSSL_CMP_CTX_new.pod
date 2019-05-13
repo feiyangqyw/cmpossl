@@ -475,7 +475,7 @@ OSSL_CMP_CTX_set_certConf_cb() sets the callback used for evaluating the newly
 enrolled certificate before the library sends, depending on its result,
 a positive or negative certConf message to the server. The callback has type
 
- typedef int (*OSSL_cmp_certConf_cb_t) (OSSL_CMP_CTX *ctx, const X509 *cert,
+ typedef int (*OSSL_cmp_certConf_cb_t) (OSSL_CMP_CTX *ctx, X509 *cert,
                                         int fail_info, const char **txt);
 
 and should inspect the certificate it obtains via the B<cert> parameter and may
