@@ -33,9 +33,9 @@ int ERR_load_CMP_strings(void);
 #  define CMP_F_CMP_CTX_SET1_RECIPNONCE                    103
 #  define CMP_F_OSSL_CMP_ASN1_OCTET_STRING_SET1            104
 #  define CMP_F_OSSL_CMP_ASN1_OCTET_STRING_SET1_BYTES      105
-#  define CMP_F_OSSL_CMP_CTX_CAPUBS_GET1                   106
-#  define CMP_F_OSSL_CMP_CTX_EXTRACERTSIN_GET1             107
-#  define CMP_F_OSSL_CMP_CTX_EXTRACERTSOUT_PUSH1           108
+#  define CMP_F_OSSL_CMP_CTX_GET1_CAPUBS                   106
+#  define CMP_F_OSSL_CMP_CTX_GET1_EXTRACERTSIN             107
+#  define CMP_F_OSSL_CMP_CTX_PUSH1_EXTRACERTSOUT           108
 #  define CMP_F_OSSL_CMP_CTX_PUSH_FREETEXT                 109
 #  define CMP_F_OSSL_CMP_CTX_SET0_NEWPKEY                  110
 #  define CMP_F_OSSL_CMP_CTX_SET0_PKEY                     111
@@ -60,7 +60,7 @@ int ERR_load_CMP_strings(void);
 #  define CMP_F_OSSL_CMP_CTX_SET1_TRANSACTIONID            130
 #  define CMP_F_OSSL_CMP_CTX_SET_PROXYPORT                 131
 #  define CMP_F_OSSL_CMP_CTX_SET_SERVERPORT                132
-#  define CMP_F_OSSL_CMP_CTX_SUBJECTALTNAME_PUSH1          133
+#  define CMP_F_OSSL_CMP_CTX_PUSH1_SUBJECTALTNAME          133
 
 /*
  * CMP reason codes.
