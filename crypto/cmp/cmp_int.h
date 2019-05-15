@@ -709,6 +709,15 @@ DECLARE_ASN1_FUNCTIONS(CMP_PROTECTEDPART)
  *   }
  */
 
+/*
+ * functions
+ */
+/* from cmp_util.c */
+int CMP_ASN1_OCTET_STRING_set1(ASN1_OCTET_STRING **tgt,
+                               const ASN1_OCTET_STRING *src);
+int CMP_ASN1_OCTET_STRING_set1_bytes(ASN1_OCTET_STRING **tgt,
+                                     const unsigned char *bytes, size_t len);
+X509_EXTENSIONS *CMP_X509_EXTENSIONS_dup(const X509_EXTENSIONS *exts);
 /* from cmp_ctx.c */
 ASN1_OCTET_STRING *CMP_CTX_get0_last_senderNonce(const OSSL_CMP_CTX *ctx);
 int CMP_CTX_set1_recipNonce(OSSL_CMP_CTX *ctx,

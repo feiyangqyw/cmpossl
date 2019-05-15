@@ -31,8 +31,8 @@ int ERR_load_CMP_strings(void);
 #  define CMP_F_CMP_CTX_SET1_EXTRACERTSIN                  101
 #  define CMP_F_CMP_CTX_SET1_NEWCLCERT                     102
 #  define CMP_F_CMP_CTX_SET1_RECIPNONCE                    103
-#  define CMP_F_OSSL_CMP_ASN1_OCTET_STRING_SET1            104
-#  define CMP_F_OSSL_CMP_ASN1_OCTET_STRING_SET1_BYTES      105
+#  define CMP_F_CMP_ASN1_OCTET_STRING_SET1                 104
+#  define CMP_F_CMP_ASN1_OCTET_STRING_SET1_BYTES           105
 #  define CMP_F_OSSL_CMP_CTX_GET1_CAPUBS                   106
 #  define CMP_F_OSSL_CMP_CTX_GET1_EXTRACERTSIN             107
 #  define CMP_F_OSSL_CMP_CTX_PUSH1_EXTRACERTSOUT           108
