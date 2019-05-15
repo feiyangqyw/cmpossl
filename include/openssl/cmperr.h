@@ -61,6 +61,12 @@ int ERR_load_CMP_strings(void);
 #  define CMP_F_OSSL_CMP_CTX_SET_PROXYPORT                 131
 #  define CMP_F_OSSL_CMP_CTX_SET_SERVERPORT                132
 #  define CMP_F_OSSL_CMP_CTX_PUSH1_SUBJECTALTNAME          133
+#  define CMP_F_OSSL_CMP_CTX_GENINFO_PUSH0_ITAV            200
+#  define CMP_F_OSSL_CMP_CTX_GENM_PUSH0_ITAV               201
+#  define CMP_F_OSSL_CMP_CTX_PUSH1_POLICYOID               202
+#  define CMP_F_OSSL_CMP_CTX_REQEXTENSIONS_HAVE_SAN        203
+#  define CMP_F_OSSL_CMP_CTX_SET1_REQEXTENSIONS            204
+#  define CMP_F_OSSL_CMP_CTX_SET_OPTION                    205
 
 /*
  * CMP reason codes.
